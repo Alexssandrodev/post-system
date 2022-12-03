@@ -231,6 +231,11 @@ main .post .messages .message p {
     margin-bottom: 1rem;
 }
 
+main .post .messages .message small {
+    color: rgb(191, 188, 188);
+    margin-left: 4rem;
+}
+
 main .post .messages .message .icons {
     display: flex;
     align-items: center;

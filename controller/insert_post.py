@@ -3,7 +3,7 @@ from connection import ConnectionDb
 class InsertPost(ConnectionDb):
     def insertPost(self, *args):
         try:
-            sql = f'INSERT INTO insert_post (post) VALUES(%s)'
+            sql = 'INSERT INTO insert_post (post, created_on) VALUES(%s, %s)'
             self.execute(sql, args)
             self.commit
         except Exception as e:

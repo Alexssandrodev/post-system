@@ -5,9 +5,11 @@ import psycopg2 as db
 from connection import ConnectionDb
 from controller.insert_post import InsertPost
 from controller.register_user import RegisterUser
+from datetime import datetime
 
 conn = ConnectionDb()
 
+date_system = datetime.now()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'webdesign'
@@ -30,7 +32,7 @@ def post():
         if post == '':
             flash('O campo post é requerido.', category='error')
         else:
-            insert.insertPost(post)
+            insert.insertPost(post, date_system)
             flash('post feito com sucesso!.', category='success')
 
         return redirect(url_for('index'))

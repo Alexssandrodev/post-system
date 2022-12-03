@@ -124,7 +124,7 @@
                         <h2>Autor: {{ user[1] }}</h2>
                     {% endfor %}
                     {% for post in posts %}
-                        <p>{{ post[1] }}</p>
+                        <p>{{ post[1] }} <small>{{ post[2] }}</small></p>
                     <div class="comment">
                         <form action="" method="post">
                             <input type="text" name="comment" id="" placeholder="Comment post {{ post[0] }}">
