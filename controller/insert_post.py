@@ -3,7 +3,7 @@ from connection import ConnectionDb
 class InsertPost(ConnectionDb):
     def insertPost(self, *args):
         try:
-            sql = 'INSERT INTO insert_post (post, created_on) VALUES(%s, %s)'
+            sql = 'INSERT INTO insert_post (post, autor, created_on, id_user) VALUES(%s, %s, %s, %s)'
             self.execute(sql, args)
             self.commit
         except Exception as e:
@@ -11,7 +11,7 @@ class InsertPost(ConnectionDb):
 
     def selectAllPosts(self):
         try:
-            post = 'SELECT * FROM insert_post'
+            post = 'SELECT * FROM insert_post ORDER BY id DESC'
             self.execute(post)
             data = self.fetchall()
             return data

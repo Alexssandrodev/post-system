@@ -1,18 +1,19 @@
-from crypt import methods
-from flask import Flask, render_template, request, session, logging, redirect, url_for, flash
-from model.config import Clientes, Connection
-import psycopg2 as db
+from flask import Flask, render_template, request, session, redirect, url_for, flash
+from flask_session import Session
 from connection import ConnectionDb
 from controller.insert_post import InsertPost
 from controller.register_user import RegisterUser
+from controller.coment import Coment
 from datetime import datetime
 
 conn = ConnectionDb()
-
 date_system = datetime.now()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'webdesign'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
 
 @app.route('/')
 def index():
@@ -20,27 +21,45 @@ def index():
     all_posts = post.selectAllPosts()
 
     client = RegisterUser()
-    user_client = client.selectUserId()
-    
-    return render_template('index.html', posts = all_posts, user_nome = user_client)
+    user_client = client.selectUsers()
 
-@app.route('/post', methods=['POST'])
-def post():
+    id_user = client.getUserId()
+    
+    coment = Coment()
+    post_coment = coment.selectAllComents()
+
+    if not session.get('user'):
+        return redirect(url_for('login'))
+    
+    return render_template('index.html', posts = all_posts, users = user_client, coment = post_coment, user_id = id_user)
+
+@app.route('/post/<id_user>', methods=['POST'])
+def post(id_user):
     if request.method == 'POST':
         insert = InsertPost()
         post = request.form['post']
+        autor = session.get('name')
         if post == '':
             flash('O campo post é requerido.', category='error')
         else:
-            insert.insertPost(post, date_system)
-            flash('post feito com sucesso!.', category='success')
+            insert.insertPost(post, autor, date_system, id_user)
+            
+        flash('post feito com sucesso!.', category='success')
+        return redirect(url_for('index'))
+
+@app.route('/coment/<id_post>/<user_id>', methods=['POST'])
+def coment(id_post, user_id):
+    if request.method == 'POST':
+        coment = Coment()
+        text = request.form['coment']
+        autor = session.get('name')
+
+        coment.inserComent(text, autor, date_system, id_post, user_id)
+        flash('Comentário adicionado', category='success')
 
         return redirect(url_for('index'))
 
-@app.route('/user/<id>')
-def user(id):
-    data = conn.query('SELECT * FROM register_user WHERE user_id = %s', id)
-    return render_template('user.html', data = data)
+    return render_template('index.html')
 
 @app.route('/register')
 def register():
@@ -50,6 +69,9 @@ def register():
 def cadastro():
     if request.method == 'POST':
         new_user = RegisterUser()
+        users = new_user.selectUsers()
+        last_login = datetime.now()
+
         nome = request.form['nome']
         email = request.form['email']
         senha = request.form['senha']
@@ -61,31 +83,31 @@ def cadastro():
         elif len(senha) <= 5:
             flash('A senha é obrigatória, precisa ter 5 ou mais caracters', category='error') 
         else:
-            new_user.insertRegister(nome, email, senha)
+            new_user.insertRegister(nome, email, senha, date_system, last_login)
             flash('Cadastro realizado com sucesso', category='success')
             return redirect(url_for('register'))
-    return render_template('register.html')
+    return render_template('register.html', user = users)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
+        user = RegisterUser()
         email = request.form['email']
         senha = request.form['senha']
-        account = conn.query('SELECT email FROM register_user')
-        password = conn.query('SELECT senha FROM register_user')
 
-        for user in account:
-            for i in user:
-                if i == email:
-                    for pass_word in password:
-                        for word in pass_word:
-                            if word == senha:
-                                session['user'] = i
-                                return redirect(url_for('index'))
-                            if word != senha:
-                                flash('Senha incorreta', category='error')
-                if i != email:
-                    flash('Email incorreto', category='error')
+        user_login = user.selectUsers()
+        
+        for users in user_login:
+            if users[2] != email:
+                flash('Este email não existe na base de dados', category='error')
+            elif users[3] != senha:
+                flash('Senha incorreta', category='error')
+            else:
+                if users[2]:
+                    session['user'] = users[2]
+                    session['name'] = users[1]
+                    flash('Login feito com sucesso!', category='success')
+                    return redirect(url_for('index'))
 
     return render_template('login.html')
 
@@ -93,40 +115,6 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('login'))
-
-
-@app.route('/edit/<id>', methods = ['POST', 'GET'])
-def get_employe(id):
-    cliente = Connection()
-    sql = "SELECT * FROM post"
-    data = cliente.query(sql)
-    cliente.commit()
-    return render_template('edit.html', student = data[0])
-
-@app.route('/update/<id>', methods = ['POST'])
-def update_student(id):
-    cliente = Clientes()
-    if request.method == 'POST':
-        fname = request.form['fname']
-        lname = request.form['lname']
-        email = request.form['email']
-
-        cliente.update(id, fname, lname, email)
-
-    return redirect(url_for('index'))
-
-@app.route('/delete/<id>', methods = ['POST', 'GET'])
-def delete_student(id):
-    cliente = Clientes()
-    cliente.delete(id)
-
-    return redirect(url_for('index'))
-
-
-
-@app.route('/dashboard')
-def dashboard():
-    return render_template('dashboard.html')
 
 
 if __name__ == ('__main__'):

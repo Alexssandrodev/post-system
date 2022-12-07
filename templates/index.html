@@ -18,8 +18,8 @@
         
         <section class="box">
             <div class="user-name">
-                {% if session['user'] %}
-                    <h3>{{ session['user'] }}</h3>
+                {% if session.user %}
+                    <h3>{{ session.name }}</h3>
                 {% else %}
                     <h3>Bem vindo</h3>
                 {% endif %}
@@ -109,39 +109,45 @@
 
             </nav><!--nav menu-->
         </section><!--sidebar-->
-
         <section class="post">
             <div class="container">
-                <form action="{{url_for('post')}}" method="post">
+                <form action="/post/{{ user_id }}" method="post">
                     <textarea name="post" id="" placeholder="Your think"></textarea>
                     <input type="submit" id="post-btn" value="Post">
                 </form>
             </div><!--container-->
-
             <div class="messages">
                 <div class="message">
-                    {% for user in user_nome %}
-                        <h2>Autor: {{ user[1] }}</h2>
-                    {% endfor %}
+
                     {% for post in posts %}
-                        <p>{{ post[1] }} <small>{{ post[2] }}</small></p>
+                    
+                        <p>{{ post[1] }} <small>Autor:</small> <strong>{{ post[2] }}</strong> <small>{{ post[3] }}</small></p>
+                        
+                        {% for coments in coment %}
+                            {% if coments[4] == post[0] %}
+                                <p class="coment-post">{{ coments[1] }} <small>Autor:</small> <strong>{{ coments[2] }}</strong> <small>{{ coments[3] }}</small></p>
+                            {% endif %}
+                        {% endfor %}
                     <div class="comment">
-                        <form action="" method="post">
-                            <input type="text" name="comment" id="" placeholder="Comment post {{ post[0] }}">
-                            <button type="submit">Comment</button>
+                        
+                        <form action="/coment/{{ post[0] }}/{{ post[4] }}" method="post">
+                            <input type="text" name="coment" id="" placeholder="Comment post">
+                            <button type="submit" id="btn-coment">Comment</button>
                         </form>
                     </div>
                     <div class="icons">
                         <div class="heart-icon">
-                            <div class="favorite">
-                                <a href="#"><span class="material-symbols-outlined">favorite</span></a>
+                            <div class="like">
+                                <a href="#"><span class="material-symbols-outlined">thumb_up_off</span><small>0</small></a>
                             </div>
-                            <div class="likes">
-                                <p>250</p>
+                            <div class="like">
+                                <a href="#"><span class="material-symbols-outlined">thumb_down</span><small>0</small></a>
                             </div>
                         </div><!--heart-icon-->
                     </div><!--icons-->
+                    
                     {% endfor %}
+
                 </div><!--message-->
                     
                     {% for user in user_nome %}
@@ -149,8 +155,7 @@
                     {% endfor %}
                 
                 <div class="resp-message">
-                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                        Libero necessitatibus ipsa.</p>
+                    
                 </div><!--resp-message-->
             </div><!--messages-->
         </section><!--post-->

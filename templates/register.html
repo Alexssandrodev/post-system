@@ -17,8 +17,8 @@
     <div class="container">
         <section class="box">
             <div class="user-name">
-                {% if session['user'] %}
-                    <h3>{{ session['user'] }}</h3>
+                {% if session.user %}
+                    <h3>{{ session.name }}</h3>
                 {% else %}
                     <h3>Bem vindo</h3>
                 {% endif %}
@@ -67,7 +67,7 @@
                         <span class="material-symbols-outlined">supervisor_account</span>
                     </div><!--icon-->
                     <div class="link">
-                        <a href="#">Login</a>
+                        <a href="/login">Login</a>
                     </div><!--linkk-->
                 </div><!--box-->
                 <div class="box">
@@ -83,7 +83,7 @@
                         <span class="material-symbols-outlined">logout</span>
                     </div><!--icon-->
                     <div class="link">
-                        <a href="#">Logout</a>
+                        <a href="/logout">Logout</a>
                     </div><!--linkk-->
                 </div><!--box-->
 
@@ -109,16 +109,19 @@
                         {% endif %}
                     {% endwith %}
                 </div>
-                <form action="{{url_for('cadastro')}}" method="post">
+            
+                <form action="/cadastro" method="post">
+                    
                     <input type="text" name="nome" id="" placeholder="Nome">
                     <input type="email" name="email" id="" placeholder="Email">
                     <input type="password" name="senha" id="" placeholder="Senha">
-                    <input type="submit" id="post-btn" value="Cadastrar">
+                    <button id="post-btn">Cadastrar</button>
                 </form>
             </div><!--container-->
-
+            
             
         </section><!--post-->
+       
     </div><!--container-->
 
    </main><!--main-->

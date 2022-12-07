@@ -18,8 +18,8 @@
         
         <section class="box">
             <div class="user-name">
-                {% if session['user'] %}
-                    <h3>{{ session['user'] }}</h3>
+                {% if session.user %}
+                    <h3>{{ session.name }}</h3>
                 {% else %}
                     <h3>Bem vindo</h3>
                 {% endif %}
