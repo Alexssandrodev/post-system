@@ -98,13 +98,13 @@
                             {% for category, message in messages %}
                                 {% if category == 'error' %}
                                     <div class="error">
-                                        {{ message }}
+                                        {{ message }} <span id="icon-close-error" class="material-symbols-outlined">close</span>
                                     </div>
-                                {% endif %}
                                 {% else %}
                                     <div class="success">
-                                        {{ message }}
+                                        {{ message }} <span id="icon-close-success" class="material-symbols-outlined">close</span>
                                     </div>
+                                {% endif %}
                             {% endfor %}
                         {% endif %}
                     {% endwith %}

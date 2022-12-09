@@ -41,13 +41,13 @@
                     {% for category, message in messages %}
                         {% if category == 'error' %}
                             <div class="error">
-                                {{ message }}
+                                {{ message }} <span id="icon-close-error" class="material-symbols-outlined">close</span>
                             </div>
-                        {% endif %}
                         {% else %}
                             <div class="success">
-                                {{ message }}
+                                {{ message }} <span id="icon-close-success" class="material-symbols-outlined">close</span>
                             </div>
+                        {% endif %}
                     {% endfor %}
                 {% endif %}
             {% endwith %}
@@ -111,15 +111,15 @@
         </section><!--sidebar-->
         <section class="post">
             <div class="container">
-                <form action="/post/{{ user_id }}" method="post">
+                <form action="/post" method="post">
                     <textarea name="post" id="" placeholder="Your think"></textarea>
                     <input type="submit" id="post-btn" value="Post">
                 </form>
             </div><!--container-->
             <div class="messages">
+                {% for post in posts %}
                 <div class="message">
 
-                    {% for post in posts %}
                     
                         <p>{{ post[1] }} <small>Autor:</small> <strong>{{ post[2] }}</strong> <small>{{ post[3] }}</small></p>
                         
@@ -130,7 +130,7 @@
                         {% endfor %}
                     <div class="comment">
                         
-                        <form action="/coment/{{ post[0] }}/{{ post[4] }}" method="post">
+                        <form action="/coment/{{ post[0] }}" method="post">
                             <input type="text" name="coment" id="" placeholder="Comment post">
                             <button type="submit" id="btn-coment">Comment</button>
                         </form>
@@ -149,10 +149,6 @@
                     {% endfor %}
 
                 </div><!--message-->
-                    
-                    {% for user in user_nome %}
-                        <a href="/user/{{ user[0] }}">{{ user[1] }}</a>
-                    {% endfor %}
                 
                 <div class="resp-message">
                     

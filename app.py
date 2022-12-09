@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, session, redirect, url_for, flash
 from flask_session import Session
+from werkzeug.security import generate_password_hash, check_password_hash
 from connection import ConnectionDb
 from controller.insert_post import InsertPost
 from controller.register_user import RegisterUser
@@ -22,8 +23,6 @@ def index():
 
     client = RegisterUser()
     user_client = client.selectUsers()
-
-    id_user = client.getUserId()
     
     coment = Coment()
     post_coment = coment.selectAllComents()
@@ -31,10 +30,10 @@ def index():
     if not session.get('user'):
         return redirect(url_for('login'))
     
-    return render_template('index.html', posts = all_posts, users = user_client, coment = post_coment, user_id = id_user)
+    return render_template('index.html', posts = all_posts, users = user_client, coment = post_coment)
 
-@app.route('/post/<id_user>', methods=['POST'])
-def post(id_user):
+@app.route('/post', methods=['POST'])
+def post():
     if request.method == 'POST':
         insert = InsertPost()
         post = request.form['post']
@@ -42,19 +41,19 @@ def post(id_user):
         if post == '':
             flash('O campo post é requerido.', category='error')
         else:
-            insert.insertPost(post, autor, date_system, id_user)
+            insert.insertPost(post, autor, date_system)
             
         flash('post feito com sucesso!.', category='success')
         return redirect(url_for('index'))
 
-@app.route('/coment/<id_post>/<user_id>', methods=['POST'])
-def coment(id_post, user_id):
+@app.route('/coment/<id_post>', methods=['POST'])
+def coment(id_post):
     if request.method == 'POST':
         coment = Coment()
         text = request.form['coment']
         autor = session.get('name')
 
-        coment.inserComent(text, autor, date_system, id_post, user_id)
+        coment.inserComent(text, autor, date_system, id_post)
         flash('Comentário adicionado', category='success')
 
         return redirect(url_for('index'))
@@ -69,12 +68,13 @@ def register():
 def cadastro():
     if request.method == 'POST':
         new_user = RegisterUser()
-        users = new_user.selectUsers()
         last_login = datetime.now()
 
         nome = request.form['nome']
         email = request.form['email']
         senha = request.form['senha']
+
+        _hashed_password = generate_password_hash(senha)
 
         if nome == '':
             flash('O campo nome é obrigatório', category='error')
@@ -83,10 +83,10 @@ def cadastro():
         elif len(senha) <= 5:
             flash('A senha é obrigatória, precisa ter 5 ou mais caracters', category='error') 
         else:
-            new_user.insertRegister(nome, email, senha, date_system, last_login)
+            new_user.insertRegister(nome, email, _hashed_password, date_system, last_login)
             flash('Cadastro realizado com sucesso', category='success')
             return redirect(url_for('register'))
-    return render_template('register.html', user = users)
+    return render_template('register.html')
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -100,14 +100,13 @@ def login():
         for users in user_login:
             if users[2] != email:
                 flash('Este email não existe na base de dados', category='error')
-            elif users[3] != senha:
-                flash('Senha incorreta', category='error')
             else:
                 if users[2]:
-                    session['user'] = users[2]
-                    session['name'] = users[1]
-                    flash('Login feito com sucesso!', category='success')
-                    return redirect(url_for('index'))
+                    if check_password_hash(users[3], senha):
+                        session['user'] = users[2]
+                        session['name'] = users[1]
+                        flash('Login feito com sucesso!', category='success')
+                        return redirect(url_for('index'))
 
     return render_template('login.html')
 

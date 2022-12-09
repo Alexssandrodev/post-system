@@ -1,7 +1,13 @@
-postBtn = document.querySelector('#post-btn')
+const iconCloseBtnError = document.querySelector('#icon-close-error')
+const iconCloseBtnSuccess = document.querySelector('#icon-close-success')
+const messageBox = document.querySelector('.mensagens')
 
-postBtn.addEventListener('submit', (e) => {
-  e.preventDefault()
-  console.log(postBtn)
+iconCloseBtnError.addEventListener('click', () => {
+  messageBox.style.opacity = '0'
 })
+
+iconCloseBtnSuccess.addEventListener('click', () => {
+  messageBox.style.opacity = '0'
+})
+
 
