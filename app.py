@@ -110,6 +110,20 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/delete/<coment_id>', methods=['POST', 'GET'])
+def delete(coment_id):
+    coment_delete = Coment()
+    users = RegisterUser().selectUsers()
+    for user in users:
+        if session.get('user') == user[2]:
+            coment_delete.deleteComent(coment_id)
+            flash('Comentário deletado', category='success')
+            return redirect(url_for('index'))
+        else:
+            flash('Erro ao deletar cometário, você precisa estar logado', category='error')
+            return redirect(url_for('index'))
+    return render_template('index.html')
+
 @app.route('/logout')
 def logout():
     session.clear()

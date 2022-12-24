@@ -120,19 +120,24 @@
                 {% for post in posts %}
                 <div class="message">
 
-                    
+                        
                         <p>{{ post[1] }} <small>Autor:</small> <strong>{{ post[2] }}</strong> <small>{{ post[3] }}</small></p>
                         
                         {% for coments in coment %}
                             {% if coments[4] == post[0] %}
-                                <p class="coment-post">{{ coments[1] }} <small>Autor:</small> <strong>{{ coments[2] }}</strong> <small>{{ coments[3] }}</small></p>
+                                <p class="coment-post">{{ coments[1] }} <small>Autor:</small> <strong>{{ coments[2] }}</strong> <small>{{ coments[3] }}</small>
+                                {% if coments[2] %}
+                                    <a href="/delete/{{ coments[0] }}" id="delete"><span id="delete" class="material-symbols-outlined">delete</span></a></p>
+                                {% endif %}
                             {% endif %}
                         {% endfor %}
                     <div class="comment">
                         
                         <form action="/coment/{{ post[0] }}" method="post">
                             <input type="text" name="coment" id="" placeholder="Comment post">
-                            <button type="submit" id="btn-coment">Comment</button>
+                            <div class="input-form">
+                                <button type="submit" id="btn-coment">Comment</button>
+                            </div>
                         </form>
                     </div>
                     <div class="icons">

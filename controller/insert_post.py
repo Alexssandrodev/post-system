@@ -17,3 +17,5 @@ class InsertPost(ConnectionDb):
             return data
         except Exception as e:
             print(f'Erro: ao retornar os posts {e}')
+
+    

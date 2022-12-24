@@ -264,6 +264,12 @@ main .post .messages .message p {
     margin-bottom: 1rem;
 }
 
+main .post .messages .message p #delete {
+    font-size: 2rem;
+    color: #fd7777;
+    margin-left: 2rem;
+}
+
 main .post .messages .message .coment-post {
     margin-left: 2rem;
     color: #777;

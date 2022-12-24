@@ -10,4 +10,9 @@ iconCloseBtnSuccess.addEventListener('click', () => {
   messageBox.style.opacity = '0'
 })
 
+const deleteComentBtn = document.querySelector('#delete')
+deleteComentBtn.addEventListener('click', () => {
+  alert('Confirma apagar o comentário?')
+})
+
 
